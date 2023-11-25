@@ -10,9 +10,134 @@ uint64_t string2uint(const char *str)
     return string2uint_range(str, 0, -1);
 }
 
+//裁剪字符串
 uint64_t string2uint_range(const char *str, int start, int end)
 {
-    return 0;
+    end = (end == -1) ? strlen(str) - 1 : end;
+
+    uint64_t uv = 0;
+    int sign_bit = 0;
+
+    int state = 0;
+    for (int i = start; i <= end; ++i) {
+        char ch = str[i];
+        if (state == 0) {
+            if (ch == '0') {
+                state = 1;
+                uv = 0;
+                continue;
+            } else if (ch >= '1' && ch <= '9') {
+                state = 2;
+                uv = ch - '0'; 
+                continue;
+                continue;
+            } else if (ch == '-') {
+                state = 3;
+                sign_bit = 1;
+            } else if (ch == ' ') {
+                state = 0;
+                continue;
+            } else {
+                goto fail;
+            }
+        } else if (state == 1) {
+            if (ch >= '0' && ch <= '9') {
+                state = 2;
+                uv = uv * 10 + ch - '0';
+            } else if (ch == 'x') {
+                state = 4;
+                continue;
+            } else if (ch == ' ') {
+                state = 6;
+                continue;
+            } else {
+                goto fail;
+            }
+        } else if (state == 2) {
+            if (ch >= '0' && ch <= '9') {
+                uint64_t pv = uv;
+                uv = uv * 10 + ch - '0';
+                //可能导致溢出
+                if (pv > uv) {
+                    printf("存在溢出\n");
+                    goto fail;
+                }
+                continue;
+            } else if (ch == ' ') {
+                state = 6;
+                continue;
+            } else {
+                goto fail;
+            }
+        } else if (state == 3) {
+            if (ch == '0') {
+                state = 1;
+                continue;
+            } else if (ch >= '1' && ch <= '9') {
+                state = 2;
+                uv = ch - '0';
+                continue;
+            } else {
+                goto fail;
+            }
+        } else if (state == 4) {
+            if (ch >= '0' && ch <= '9') {
+                state = 5;
+                uv = uv * 16 + ch - '0';
+                continue;
+            } else if (ch >= 'a' && ch <= 'f') {
+                state = 5;
+                uv = uv * 16 + ch - 'a' + 10;
+                continue;
+            } else {
+                goto fail;
+            }
+        } else if (state == 5) {
+            if (ch >= '0' && ch <= '9') {
+                state = 5;
+                uint64_t pv = uv;
+                uv = uv * 16 + ch - '0';
+                if (pv > uv) {
+                    printf("存在溢出\n");
+                    goto fail;
+                }
+                continue;
+            } else if (ch >= 'a' && ch <= 'f') {
+                state = 5;
+                uint64_t pv = uv;
+                uv = uv * 16 + ch - 'a' + 10;
+                if (pv > uv) {
+                    printf("存在溢出\n");
+                    goto fail;
+                }
+                continue;
+            } else {
+                goto fail;
+            }
+        } else if (state == 6) {
+            if (ch == ' ') {
+                state = 6;
+                continue;
+            } else {
+                goto fail;
+            }
+        }
+    }
+
+    if (sign_bit == 0) {
+        return uv;
+    } else if (sign_bit == 1) {
+        if ((uv & 0x8000000000000000) != 0) {
+            printf("(int64_t)%s: 有符号溢出\n", str);
+            exit(0);
+        }
+        int64_t sv = -1 * (int64_t)uv;
+        return *((uint64_t*)&sv);
+    }
+
+    fail:
+    printf("type converter: <%s> connot be converter to integer\n", str);
+    exit(0);
 }
 
 // convert uint32_t to its float

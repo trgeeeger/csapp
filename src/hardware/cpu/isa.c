@@ -142,7 +142,31 @@ static void parse_instruction(const char *str, inst_t *inst, core_t *cr)
 
 static void parse_operand(const char *str, od_t *od, core_t *cr)
 {
+    // str : 汇编指令组成的一个字符串
+    // od  : 操作数地址
+    // cr  : cpu核心
+    od->type = EMPTY;
+    od->imm = 0;
+    od->scal = 0;
+    od->reg1 = 0;
+    od->reg2 = 0;
 
+    int str_len = strlen(str);
+    if (str_len == 0) {
+        printf("指令不存在\n");
+        return;
+    }
+    if (str[0] == '$') {
+        //立即数
+        od->type = IMM;
+        od->imm = string2uint_range(str, 1, -1);
+        //int state = 0;
+
+    } else if (str[0] == '%') {
+        //寄存器
+    } else {
+        //访存操作
+    }
 }
 
 /*======================================*/
