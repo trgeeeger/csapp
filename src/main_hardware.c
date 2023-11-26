@@ -30,9 +30,7 @@ char a[][20] = {
 int main()
 {
     //TestAddFunctionCallAndComputation();
-    for (int i = 0; i < 12; ++i) {
-        printf("%s ==> %lx\n", a[i], string2uint_range(a[i], 0, -1));
-    }
+    TestParsingOperand();
     return 0;
 }
 
@@ -52,10 +50,7 @@ static void TestAddFunctionCallAndComputation()
     ac->reg.rbp = 0x7ffffffee110;
     ac->reg.rsp = 0x7ffffffee0f0;
 
-    ac->CF = 0;
-    ac->ZF = 0;
-    ac->SF = 0;
-    ac->OF = 0;
+    ac->flags.__flags_value = 0;
 
     write64bits_dram(va2pa(0x7ffffffee110, ac), 0x0000000000000000, ac);    // rbp
     write64bits_dram(va2pa(0x7ffffffee108, ac), 0x0000000000000000, ac);
