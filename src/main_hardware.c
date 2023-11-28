@@ -8,6 +8,9 @@
 
 static void TestAddFunctionCallAndComputation();
 
+
+void TestParsingOperand();
+void TestParsingInstruction();
 // symbols from isa and sram
 void print_register(core_t *cr);
 void print_stack(core_t *cr);
@@ -30,7 +33,8 @@ char a[][20] = {
 int main()
 {
     //TestAddFunctionCallAndComputation();
-    TestParsingOperand();
+    //TestParsingInstruction();
+    TestAddFunctionCallAndComputation();
     return 0;
 }
 
@@ -82,6 +86,7 @@ static void TestAddFunctionCallAndComputation()
         "mov    %rax,-0x8(%rbp)",   // 14
     };
     ac->rip = (uint64_t)&assembly[11];
+    //printf(" addr ==> %p\n", &assembly[0]);
     sprintf(assembly[13], "callq  $%p", &assembly[0]);
 
     printf("begin\n");
