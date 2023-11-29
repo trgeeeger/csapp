@@ -688,6 +688,7 @@ static void add_handler(od_t *src_od, od_t *dst_od, core_t *cr)
         cr->flags.OF = ((src_sign == 0 && dst_sign == 0 &&
                         val_sign == 1) || (src_sign == 1 && 
                         dst_sign == 1 && val_sign == 0));
+        // set condition flags
 
         // update registers
         *(uint64_t *)dst = val;
